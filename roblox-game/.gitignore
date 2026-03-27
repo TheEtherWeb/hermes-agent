@@ -1,0 +1,13 @@
+# Roblox binary files
+*.rbxl
+*.rbxlx
+*.rbxm
+*.rbxmx
+
+# Rojo build output
+build/
+dist/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
