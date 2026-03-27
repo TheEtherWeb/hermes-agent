@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>State to State — US State Laws Explorer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- =============================================
+     HEADER + TABS
+     ============================================= -->
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-icon">🗺️</div>
+      <div class="brand-text">
+        <h1>State to State</h1>
+        <p>Explore &amp; compare US state laws side by side</p>
+      </div>
+    </div>
+    <div class="disclaimer">
+      ⚠️ Data is simplified for educational purposes. Laws change frequently — always verify with official sources before making legal decisions.
+    </div>
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="state-laws">📋 State Laws</button>
+      <button class="nav-tab" data-tab="compare">⚖️ Compare States</button>
+      <button class="nav-tab" data-tab="shared-laws">🔗 Shared Laws</button>
+    </nav>
+  </div>
+</header>
+
+<!-- =============================================
+     MAIN CONTENT
+     ============================================= -->
+<main class="main">
+
+  <!-- ==========================================
+       TAB 1: STATE LAWS
+       ========================================== -->
+  <div id="tab-state-laws" class="tab-panel active">
+
+    <div class="state-selector-bar">
+      <label for="state-select">Select a state:</label>
+      <select id="state-select" class="state-select"></select>
+    </div>
+
+    <div class="state-hero">
+      <div class="state-hero-abbr" id="hero-abbr">IL</div>
+      <div class="state-hero-info">
+        <h2 id="hero-name">Illinois</h2>
+        <span class="region-tag" id="hero-region">Midwest</span>
+      </div>
+      <div class="law-count-badge">
+        <div class="count" id="hero-count">13</div>
+        <div class="label">laws tracked</div>
+      </div>
+    </div>
+
+    <div id="category-filter" class="category-filter"></div>
+
+    <div id="laws-grid" class="laws-grid"></div>
+  </div>
+
+  <!-- ==========================================
+       TAB 2: COMPARE STATES
+       ========================================== -->
+  <div id="tab-compare" class="tab-panel">
+
+    <div class="compare-selectors">
+      <!-- State A -->
+      <div class="compare-state-card">
+        <div class="compare-abbr" id="compare-abbr-a">IL</div>
+        <div class="compare-select-wrap">
+          <div class="compare-state-name" id="compare-name-a">Illinois</div>
+          <select id="compare-select-a" class="state-select" style="min-width:0; width:100%; margin-top:4px;"></select>
+        </div>
+      </div>
+
+      <div class="compare-vs">VS</div>
+
+      <!-- State B -->
+      <div class="compare-state-card">
+        <div class="compare-abbr right" id="compare-abbr-b">TX</div>
+        <div class="compare-select-wrap">
+          <div class="compare-state-name" id="compare-name-b">Texas</div>
+          <select id="compare-select-b" class="state-select" style="min-width:0; width:100%; margin-top:4px;"></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="compare-table">
+      <div class="compare-table-header">
+        <span>Law</span>
+        <span id="compare-header-a">State A</span>
+        <span id="compare-header-b">State B</span>
+      </div>
+      <div id="compare-tbody"></div>
+      <div id="compare-summary" class="compare-summary"></div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       TAB 3: SHARED LAWS
+       ========================================== -->
+  <div id="tab-shared-laws" class="tab-panel">
+    <div class="shared-layout">
+
+      <!-- Left: State Toggles -->
+      <div class="state-toggle-panel">
+        <div class="panel-header">
+          <span class="panel-title">Toggle States</span>
+          <div class="panel-actions">
+            <button class="btn-sm" onclick="selectAllStates()">All On</button>
+            <button class="btn-sm" onclick="clearAllStates()">All Off</button>
+          </div>
+        </div>
+        <div class="active-count-display" id="active-count">
+          <strong>51</strong> of 51 states/territories selected
+        </div>
+        <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">
+          Click a state to toggle it <strong>off</strong>. The right panel shows laws that all <em>active</em> states share.
+        </p>
+        <div id="state-toggles"></div>
+      </div>
+
+      <!-- Right: Shared Laws Results -->
+      <div class="shared-results-panel">
+        <div class="results-header">
+          <div>
+            <div class="results-title">Laws Shared by All Selected States</div>
+            <div class="results-subtitle">Policies where every active state has the identical stance</div>
+          </div>
+          <span class="results-count" id="shared-count">0 shared</span>
+        </div>
+        <div id="shared-results"></div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
