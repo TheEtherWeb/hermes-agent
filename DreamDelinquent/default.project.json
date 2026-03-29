@@ -1,0 +1,34 @@
+{
+  "name": "DreamDelinquent",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Modules": {
+        "$path": "src/ReplicatedStorage/Modules"
+      },
+      "Remotes": {
+        "$path": "src/ReplicatedStorage/Remotes"
+      },
+      "Assets": {
+        "$path": "src/ReplicatedStorage/Assets"
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "$path": "src/ServerScriptService"
+    },
+    "StarterPlayerScripts": {
+      "$className": "StarterPlayerScripts",
+      "$path": "src/StarterPlayerScripts"
+    },
+    "StarterGui": {
+      "$className": "StarterGui",
+      "$path": "src/StarterGui"
+    },
+    "StarterCharacterScripts": {
+      "$className": "StarterCharacterScripts",
+      "$path": "src/StarterCharacterScripts"
+    }
+  }
+}
