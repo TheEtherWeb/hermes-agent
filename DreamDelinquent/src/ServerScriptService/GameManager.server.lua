@@ -16,6 +16,7 @@ local CombatSystem    = require(Modules.CombatSystem)
 local ClubSystem      = require(Modules.ClubSystem)
 local GradeSystem     = require(Modules.GradeSystem)
 local ClassMinigame   = require(Modules.ClassMinigame)
+local PressureArts    = require(Modules.PressureArts)
 
 local SharedRegistry  = require(script.Parent.SharedRegistry)
 
@@ -57,6 +58,7 @@ local RE_MilestoneText     = getRemote("MilestoneText")
 local RE_ParkourResult     = getRemote("ParkourResult")
 local RE_StartMinigame     = getRemote("StartMinigame")
 local RE_ShowDiploma       = getRemote("ShowDiploma")
+local RE_PressureArtUnlocked = getRemote("PressureArtUnlocked")
 
 -- Functions
 local RF_GetPlayerState    = getFunction("GetPlayerState")
@@ -99,6 +101,30 @@ local function broadcastMilestone(player, data, strongerResult, strangerResult)
 	-- Update portrait
 	local portraitState = StrongerStrangerSystem.GetPortraitState(data)
 	RE_PortraitState:FireClient(player, portraitState)
+end
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Helper: scan for newly unlockable Pressure Arts and notify client
+-- ─────────────────────────────────────────────────────────────────────────────
+local function scanAndNotifyArts(player, session)
+	local eligible = PressureArts.ScanForUnlocks(session.data)
+	if #eligible == 0 then return end
+
+	local unlocked = {}
+	for _, artId in ipairs(eligible) do
+		local ok = PressureArts.TryUnlock(artId, session.data)
+		if ok then
+			local artDef = PressureArts.ARTS[artId]
+			table.insert(unlocked, {
+				id   = artId,
+				name = artDef and artDef.name or artId,
+			})
+		end
+	end
+
+	if #unlocked > 0 then
+		RE_PressureArtUnlocked:FireClient(player, unlocked)
+	end
 end
 
 -- ─────────────────────────────────────────────────────────────────────────────
@@ -148,6 +174,7 @@ schedule:OnPhaseChange(function(newPhase, prevPhase, day)
 			if result then
 				RE_ClubResult:FireClient(player, result)
 				broadcastMilestone(player, session.data, result.strongerResult, result.strangerResult)
+				scanAndNotifyArts(player, session)
 				RE_StateUpdate:FireClient(player, session.data:Serialize())
 			end
 		end
@@ -272,8 +299,9 @@ RF_SubmitMinigame.OnServerInvoke = function(player, subjectId, score)
 	local result = ClassMinigame.ProcessResult(subjectId, score, session.data)
 	if result then
 		RE_ClassResult:FireClient(player, result)
-		RE_StateUpdate:FireClient(player, session.data:Serialize())
 		broadcastMilestone(player, session.data, result.strongerResult, nil)
+		scanAndNotifyArts(player, session)
+		RE_StateUpdate:FireClient(player, session.data:Serialize())
 	end
 	return result
 end
@@ -309,8 +337,9 @@ RF_PursueRumor.OnServerInvoke = function(player, rumorId)
 		consequence= outcome.consequence,
 		nextRumorId= outcome.nextRumorId,
 	})
-	RE_StateUpdate:FireClient(player, session.data:Serialize())
 	broadcastMilestone(player, session.data, nil, strangerResult)
+	scanAndNotifyArts(player, session)
+	RE_StateUpdate:FireClient(player, session.data:Serialize())
 
 	return outcome
 end
@@ -360,6 +389,7 @@ RE_ParkourResult.OnServerEvent:Connect(function(player, moveData)
 		if result.strongerResult then
 			broadcastMilestone(player, session.data, result.strongerResult, nil)
 		end
+		scanAndNotifyArts(player, session)
 		RE_StateUpdate:FireClient(player, session.data:Serialize())
 	end
 end)
@@ -445,6 +475,7 @@ RF_CombatAction.OnServerInvoke = function(player, action)
 			local resolveResult = CombatSystem.ResolveFight(defender, attacker, StrongerStrangerSystem)
 			broadcastMilestone(player, session.data,
 				resolveResult.loser.strongerResult, nil)
+			scanAndNotifyArts(player, session)
 			RE_StateUpdate:FireClient(player, session.data:Serialize())
 			RE_CombatResult:FireClient(player, { won = false })
 		end
@@ -454,6 +485,7 @@ RF_CombatAction.OnServerInvoke = function(player, action)
 		local resolveResult = CombatSystem.ResolveFight(attacker, defender, StrongerStrangerSystem)
 		broadcastMilestone(player, session.data,
 			resolveResult.winner.strongerResult, nil)
+		scanAndNotifyArts(player, session)
 		RE_StateUpdate:FireClient(player, session.data:Serialize())
 		RE_CombatResult:FireClient(player, {
 			won  = true,

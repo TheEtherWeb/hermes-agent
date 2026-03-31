@@ -150,24 +150,30 @@ local stLabel = makeLabel(stBg, "STLabel", "ST", UDim2.new(1,0,1,0),
 	UDim2.new(0,4,0,0), Constants.THEME.TEXT_PRIMARY, Constants.FONT_MONO, 8)
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- PANEL 2: Stat strip  (left side, below portrait)
+-- PANEL 2a: Stronger stat strip  (left side, below portrait)
 -- ─────────────────────────────────────────────────────────────────────────────
-local statPanel = makeFrame(ScreenGui, "StatPanel",
-	UDim2.new(0,120,0,200),
+local strongerStatCount = #Constants.STRONGER_STATS
+local strongerPanelH    = strongerStatCount * 21 + 22
+local strongerStatPanel = makeFrame(ScreenGui, "StrongerStatPanel",
+	UDim2.new(0,120,0,strongerPanelH),
 	UDim2.new(0,12,0,180),
 	Constants.THEME.BG_PRIMARY,
 	Constants.THEME.PANEL_BORDER, 8)
 
+makeLabel(strongerStatPanel, "StrongerHeader", "STRONGER",
+	UDim2.new(1,-8,0,14), UDim2.new(0,4,0,2),
+	Constants.THEME.STRONGER_BAR, Constants.FONT_MONO, 10)
+
 local statBars = {}
-local statY = 4
-for _, statName in ipairs(Constants.STATS) do
-	local rowLabel = makeLabel(statPanel, statName.."Label",
+local statY = 18
+for _, statName in ipairs(Constants.STRONGER_STATS) do
+	makeLabel(strongerStatPanel, statName.."Label",
 		statName:sub(1,3):upper(),
 		UDim2.new(0,28,0,16),
 		UDim2.new(0,4,0,statY),
 		Constants.THEME.TEXT_SECONDARY, Constants.FONT_MONO, 10)
 
-	local barBg = makeFrame(statPanel, statName.."BarBG",
+	local barBg = makeFrame(strongerStatPanel, statName.."BarBG",
 		UDim2.new(0,72,0,8),
 		UDim2.new(0,36,0,statY+4),
 		Constants.THEME.STAT_BAR_BG, nil, 3)
@@ -175,18 +181,81 @@ for _, statName in ipairs(Constants.STATS) do
 	local barFill = makeFrame(barBg, statName.."Fill",
 		UDim2.new(0.05,0,1,0),
 		UDim2.new(0,0,0,0),
-		Constants.THEME.ACCENT_STRONGER, nil, 3)
+		Constants.THEME.STRONGER_BAR, nil, 3)
 
-	statBars[statName] = { bg=barBg, fill=barFill }
+	statBars[statName] = { bg=barBg, fill=barFill, source="stats" }
 	statY = statY + 21
 end
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- PANEL 3: Stronger / Stranger meters (bottom-left)
+-- PANEL 2b: Psych bridge bar  (between Stronger and Stranger)
 -- ─────────────────────────────────────────────────────────────────────────────
+local psychPanelY = 180 + strongerPanelH + 6
+local psychPanel = makeFrame(ScreenGui, "PsychPanel",
+	UDim2.new(0,120,0,32),
+	UDim2.new(0,12,0,psychPanelY),
+	Constants.THEME.BG_PRIMARY,
+	Constants.THEME.PANEL_BORDER, 8)
+
+makeLabel(psychPanel, "PsychLabel", "PSYCH",
+	UDim2.new(0,36,0,14), UDim2.new(0,4,0,2),
+	Constants.THEME.PSYCH_BAR, Constants.FONT_MONO, 10)
+
+local psychBarBg = makeFrame(psychPanel, "PsychBarBG",
+	UDim2.new(0,72,0,8),
+	UDim2.new(0,36,0,14),
+	Constants.THEME.STAT_BAR_BG, nil, 3)
+
+local psychBarFill = makeFrame(psychBarBg, "PsychFill",
+	UDim2.new(0.05,0,1,0),
+	UDim2.new(0,0,0,0),
+	Constants.THEME.PSYCH_BAR, nil, 3)
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- PANEL 2c: Stranger stat strip  (below Psych)
+-- ─────────────────────────────────────────────────────────────────────────────
+local strangerStatCount = #Constants.STRANGER_STATS
+local strangerPanelH    = strangerStatCount * 21 + 22
+local strangerPanelY    = psychPanelY + 32 + 6
+local strangerStatPanel = makeFrame(ScreenGui, "StrangerStatPanel",
+	UDim2.new(0,120,0,strangerPanelH),
+	UDim2.new(0,12,0,strangerPanelY),
+	Constants.THEME.BG_PRIMARY,
+	Constants.THEME.PANEL_BORDER, 8)
+
+makeLabel(strangerStatPanel, "StrangerHeader", "STRANGER",
+	UDim2.new(1,-8,0,14), UDim2.new(0,4,0,2),
+	Constants.THEME.STRANGER_BAR, Constants.FONT_MONO, 10)
+
+statY = 18
+for _, statName in ipairs(Constants.STRANGER_STATS) do
+	makeLabel(strangerStatPanel, statName.."Label",
+		statName:sub(1,3):upper(),
+		UDim2.new(0,28,0,16),
+		UDim2.new(0,4,0,statY),
+		Constants.THEME.TEXT_SECONDARY, Constants.FONT_MONO, 10)
+
+	local barBg = makeFrame(strangerStatPanel, statName.."BarBG",
+		UDim2.new(0,72,0,8),
+		UDim2.new(0,36,0,statY+4),
+		Constants.THEME.STAT_BAR_BG, nil, 3)
+
+	local barFill = makeFrame(barBg, statName.."Fill",
+		UDim2.new(0.05,0,1,0),
+		UDim2.new(0,0,0,0),
+		Constants.THEME.STRANGER_BAR, nil, 3)
+
+	statBars[statName] = { bg=barBg, fill=barFill, source="strangerStats" }
+	statY = statY + 21
+end
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- PANEL 3: Stronger / Stranger axis meters (below Stranger stats)
+-- ─────────────────────────────────────────────────────────────────────────────
+local dualPanelY = strangerPanelY + strangerPanelH + 6
 local dualPanel = makeFrame(ScreenGui, "DualPanel",
 	UDim2.new(0,140,0,70),
-	UDim2.new(0,12,0,390),
+	UDim2.new(0,12,0,dualPanelY),
 	Constants.THEME.BG_PRIMARY,
 	Constants.THEME.PANEL_BORDER, 8)
 
@@ -571,19 +640,35 @@ local HUDController = {}
 function HUDController.UpdateStats(data)
 	if not data then return end
 
-	-- Stat bars
-	for _, statName in ipairs(Constants.STATS) do
+	-- Stronger stat bars
+	for _, statName in ipairs(Constants.STRONGER_STATS) do
 		local bars = statBars[statName]
 		if bars then
 			local pct = (data.stats[statName] or 0) / Constants.STAT_MAX
-			local tween = TweenService:Create(bars.fill,
+			TweenService:Create(bars.fill,
 				TweenInfo.new(0.5, Enum.EasingStyle.Sine),
-				{ Size = UDim2.new(math.clamp(pct,0.02,1), 0, 1, 0) })
-			tween:Play()
+				{ Size = UDim2.new(math.clamp(pct,0.02,1), 0, 1, 0) }):Play()
 		end
 	end
 
-	-- Stronger / Stranger
+	-- Stranger stat bars
+	for _, statName in ipairs(Constants.STRANGER_STATS) do
+		local bars = statBars[statName]
+		if bars then
+			local pct = (data.strangerStats[statName] or 0) / Constants.STAT_MAX
+			TweenService:Create(bars.fill,
+				TweenInfo.new(0.5, Enum.EasingStyle.Sine),
+				{ Size = UDim2.new(math.clamp(pct,0.02,1), 0, 1, 0) }):Play()
+		end
+	end
+
+	-- Psych bridge bar
+	local psychPct = (data.psych or 0) / Constants.PSYCH_MAX
+	TweenService:Create(psychBarFill,
+		TweenInfo.new(0.5, Enum.EasingStyle.Sine),
+		{ Size = UDim2.new(math.clamp(psychPct,0.02,1), 0, 1, 0) }):Play()
+
+	-- Stronger / Stranger axis meters
 	local sPct = (data.stronger or 0) / Constants.STRONGER_MAX
 	TweenService:Create(strongerFill,
 		TweenInfo.new(0.6, Enum.EasingStyle.Sine),
